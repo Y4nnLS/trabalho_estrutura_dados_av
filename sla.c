@@ -23,6 +23,33 @@ struct movie
 };
 
 /**
+ * Função para escapar caracteres especiais em uma string.
+ * Retorna uma nova string com os caracteres escapados.
+ */
+char *escape_quotes(const char *str)
+{
+    size_t len = strlen(str);
+    char *escaped_str = (char *)malloc(2 * len + 1); // Tamanho máximo possível
+    if (!escaped_str)
+    {
+        perror("Erro ao alocar memória");
+        exit(EXIT_FAILURE);
+    }
+
+    int j = 0;
+    for (int i = 0; str[i] != '\0'; i++)
+    {
+        if (str[i] == '"')
+        {
+            escaped_str[j++] = '\\'; // Adiciona uma barra invertida antes da aspa
+        }
+        escaped_str[j++] = str[i];
+    }
+    escaped_str[j] = '\0';
+    return escaped_str;
+}
+
+/**
  * Adiciona um filme à lista de filmes de um ator.
  *
  * @param a Apontador para a estrutura do ator.
@@ -115,13 +142,13 @@ int ler_atores(const char *filename, struct actor **ArrayArtistas, int *size_Arr
     while (fgets(line, sizeof(line), file_atores))
     {
         char *id_str = strtok(line, "\t");
-        char *name = strtok(NULL, "\t");
+        char *primaryName = strtok(NULL, "\t");
         char *birthYear = strtok(NULL, "\t");
         char *deathYear = strtok(NULL, "\t");
         char *primaryProfession = strtok(NULL, "\t");
         char *knownForTitles = strtok(NULL, "\t");
 
-        if (id_str && name && knownForTitles)
+        if (id_str && primaryName)
         {
             if (count_actors >= *size_ArrayArtistas)
             {
@@ -135,7 +162,7 @@ int ler_atores(const char *filename, struct actor **ArrayArtistas, int *size_Arr
             }
 
             (*ArrayArtistas)[count_actors].id = atoi(id_str + 2);
-            (*ArrayArtistas)[count_actors].name = strdup(name);
+            (*ArrayArtistas)[count_actors].name = strdup(primaryName);
             if (!(*ArrayArtistas)[count_actors].name)
             {
                 perror("Erro ao duplicar string");
@@ -192,7 +219,7 @@ int ler_filmes(const char *filename, struct movie **ArrayFilmes, int *size_Array
         char *runtimeMinutes = strtok(NULL, "\t");
         char *genres = strtok(NULL, "\t");
 
-        if (titleType[0] != 's')
+        if (strcmp(titleType, "movie") == 0)
         {
             if (id_str && primaryTitle)
             {
@@ -208,7 +235,8 @@ int ler_filmes(const char *filename, struct movie **ArrayFilmes, int *size_Array
                 }
 
                 (*ArrayFilmes)[count_movies].id = atoi(id_str + 2);
-                (*ArrayFilmes)[count_movies].title = strdup(primaryTitle);
+                char *escaped_title = escape_quotes(primaryTitle);
+                (*ArrayFilmes)[count_movies].title = strdup(escaped_title);
                 if (!(*ArrayFilmes)[count_movies].title)
                 {
                     perror("Erro ao duplicar string");
@@ -332,7 +360,7 @@ void escrever_grafo(const char *filename, struct movie *ArrayFilmes, int count_m
     FILE *output_file = fopen(filename, "w");
     if (!output_file)
     {
-        perror("Erro ao abrir arquivo output.dot");
+        perror("Erro ao abrir arquivo dot");
         exit(EXIT_FAILURE);
     }
     printf("Montando grafo...\n");
@@ -377,6 +405,10 @@ void escrever_grafo(const char *filename, struct movie *ArrayFilmes, int count_m
 
 int main()
 {
+
+    int max_actors = 1000; // Limite máximo de atores a serem processados
+    int max_movies = 10000; // Limite máximo de filmes a serem processados
+
     int size_ArrayArtistas = 1;
     struct actor *ArrayArtistas = (struct actor *)malloc(size_ArrayArtistas * sizeof(struct actor));
     if (!ArrayArtistas)
@@ -386,6 +418,9 @@ int main()
     }
 
     int count_actors = ler_atores("name.basics.tsv", &ArrayArtistas, &size_ArrayArtistas);
+    if (count_actors > max_actors)
+        count_actors = max_actors; // Limita o número de atores ao máximo definido
+
 
     int size_ArrayFilmes = 1;
     struct movie *ArrayFilmes = (struct movie *)malloc(size_ArrayFilmes * sizeof(struct movie));
@@ -396,6 +431,8 @@ int main()
     }
 
     int count_movies = ler_filmes("title.basics.tsv", &ArrayFilmes, &size_ArrayFilmes);
+    if (count_movies > max_movies)
+        count_movies = max_movies; // Limita o número de filmes ao máximo definido
 
     preencher_neighbors(ArrayArtistas, count_actors, ArrayFilmes, count_movies);
 
