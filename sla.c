@@ -406,7 +406,7 @@ void escrever_grafo(const char *filename, struct movie *ArrayFilmes, int count_m
 int main()
 {
 
-    int max_actors = 1000; // Limite máximo de atores a serem processados
+    int max_actors = 10000; // Limite máximo de atores a serem processados
     int max_movies = 10000; // Limite máximo de filmes a serem processados
 
     int size_ArrayArtistas = 1;
