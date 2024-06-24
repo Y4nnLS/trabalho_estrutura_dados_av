@@ -1,8 +1,12 @@
 ## 🙋‍♂️ Equipe de desenvolvimento
+
 <table align='center'>
   <tr>
     <td align="center">
         <img style="border-radius: 50%;" src="https://avatars.githubusercontent.com/u/101208372?v=4" width="100px;" alt=""/><br /><sub><b><a href="https://github.com/Y4nnLS">Yann Lucas</a></b></sub></a><br />🤓☝</a></td>
+    <td align="center">
+        <img style="border-radius: 50%;" src="https://avatars.githubusercontent.com/u/89037095?v=4" width="100px;" alt=""/><br /><sub><b><a href="https://github.com/Y4nnLS">Gabriel Pepe</a></b></sub></a><br />👻</a></td>
+  </table>
   </table>
 
 # Projeto de Grafos de Filmes e Artistas
@@ -19,7 +23,9 @@ Este projeto implementa um programa em C que processa dados de artistas e filmes
 ## Critérios do Trabalho e Implementação
 
 ### (1) Array Dinâmico para Armazenar Artistas
+
 A função `ler_atores` implementa a leitura dos dados dos artistas e armazena-os em um array dinâmico, redimensionado conforme necessário:
+
 ```c
 int ler_atores(const char *filename, struct actor **ArrayArtistas, int *size_ArrayArtistas) {
     FILE *file = fopen(filename, "r");
@@ -31,14 +37,14 @@ int ler_atores(const char *filename, struct actor **ArrayArtistas, int *size_Arr
     int count = 0;
     int capacity = 10;
     *ArrayArtistas = (struct actor *)malloc(capacity * sizeof(struct actor));
-    
+
     // Redimensiona o array se necessário
     while (fgets(line, sizeof(line), file)) {
         if (count >= capacity) {
             capacity *= 2;
             *ArrayArtistas = (struct actor *)realloc(*ArrayArtistas, capacity * sizeof(struct actor));
         }
-        
+
         // Processa a linha lida
         // ...
         count++;
@@ -51,7 +57,9 @@ int ler_atores(const char *filename, struct actor **ArrayArtistas, int *size_Arr
 ```
 
 ### (2) Lista de Adjacências para Armazenar os Filmes
+
 A função `ler_filmes` implementa a leitura dos dados dos filmes e armazena-os em um array dinâmico, que é usado como base para a lista de adjacências:
+
 ```c
 int ler_filmes(const char *filename, struct movie **ArrayFilmes, int *size_ArrayFilmes) {
     FILE *file = fopen(filename, "r");
@@ -63,14 +71,14 @@ int ler_filmes(const char *filename, struct movie **ArrayFilmes, int *size_Array
     int count = 0;
     int capacity = 10;
     *ArrayFilmes = (struct movie *)malloc(capacity * sizeof(struct movie));
-    
+
     // Redimensiona o array se necessário
     while (fgets(line, sizeof(line), file)) {
         if (count >= capacity) {
             capacity *= 2;
             *ArrayFilmes = (struct movie *)realloc(*ArrayFilmes, capacity * sizeof(struct movie));
         }
-        
+
         // Processa a linha lida
         // ...
         count++;
@@ -83,7 +91,9 @@ int ler_filmes(const char *filename, struct movie **ArrayFilmes, int *size_Array
 ```
 
 ### (3) Struct para os Artistas
+
 A estrutura `struct actor` armazena o ID do artista, o nome e uma lista encadeada de IDs dos filmes em que ele participou:
+
 ```c
 struct actor {
     int id;
@@ -93,7 +103,9 @@ struct actor {
 ```
 
 ### (4) Struct para os Filmes
+
 A estrutura `struct movie` armazena o ID do filme, o título e uma lista encadeada de vizinhos (outros filmes com artistas em comum):
+
 ```c
 struct movie {
     int id;
@@ -103,7 +115,9 @@ struct movie {
 ```
 
 ### (5) Leitura do Arquivo de Artistas
+
 A função `ler_atores` lê os dados dos artistas do arquivo `name.basics.tsv` e preenche a struct `actor` correspondente, incluindo a lista de filmes destacados:
+
 ```c
 int ler_atores(const char *filename, struct actor **ArrayArtistas, int *size_ArrayArtistas) {
     FILE *file = fopen(filename, "r");
@@ -115,13 +129,13 @@ int ler_atores(const char *filename, struct actor **ArrayArtistas, int *size_Arr
     int count = 0;
     int capacity = 10;
     *ArrayArtistas = (struct actor *)malloc(capacity * sizeof(struct actor));
-    
+
     while (fgets(line, sizeof(line), file)) {
         if (count >= capacity) {
             capacity *= 2;
             *ArrayArtistas = (struct actor *)realloc(*ArrayArtistas, capacity * sizeof(struct actor));
         }
-        
+
         // Processa a linha lida para preencher a struct actor
         // ...
         count++;
@@ -134,7 +148,9 @@ int ler_atores(const char *filename, struct actor **ArrayArtistas, int *size_Arr
 ```
 
 ### (6) Leitura do Arquivo de Filmes
+
 A função `ler_filmes` lê os dados dos filmes do arquivo `title.basics.tsv`, ignorando as linhas que não correspondem a filmes (por exemplo, linhas que não possuem "movie" na coluna `titleType`):
+
 ```c
 int ler_filmes(const char *filename, struct movie **ArrayFilmes, int *size_ArrayFilmes) {
     FILE *file = fopen(filename, "r");
@@ -146,13 +162,13 @@ int ler_filmes(const char *filename, struct movie **ArrayFilmes, int *size_Array
     int count = 0;
     int capacity = 10;
     *ArrayFilmes = (struct movie *)malloc(capacity * sizeof(struct movie));
-    
+
     while (fgets(line, sizeof(line), file)) {
         if (count >= capacity) {
             capacity *= 2;
             *ArrayFilmes = (struct movie *)realloc(*ArrayFilmes, capacity * sizeof(struct movie));
         }
-        
+
         // Processa a linha lida para preencher a struct movie
         if (strstr(line, "movie")) {
             // ...
@@ -167,7 +183,9 @@ int ler_filmes(const char *filename, struct movie **ArrayFilmes, int *size_Array
 ```
 
 ### (7) Formação do Grafo de Filmes
+
 A função `preencher_neighbors` percorre o array de artistas e forma cliques entre os filmes destacados para cada artista, adicionando arestas entre filmes que compartilham artistas:
+
 ```c
 void preencher_neighbors(struct actor *ArrayArtistas, int count_actors, struct movie *ArrayFilmes, int count_movies) {
     for (int i = 0; i < count_actors; i++) {
@@ -186,7 +204,9 @@ void preencher_neighbors(struct actor *ArrayArtistas, int count_actors, struct m
 ```
 
 ### (8) Otimização com Busca Binária
+
 A implementação inclui uma otimização para acelerar a busca de filmes por ID utilizando busca binária, reduzindo o tempo de execução:
+
 ```c
 int buscar_filme(struct movie *ArrayFilmes, int size_ArrayFilmes, int id) {
     int start = 0;
@@ -206,7 +226,9 @@ int buscar_filme(struct movie *ArrayFilmes, int size_ArrayFilmes, int id) {
 ```
 
 ### (9) Geração do Arquivo DOT
+
 A função `escrever_grafo` gera o arquivo `output.dot` no formato DOT, utilizando os títulos dos filmes como identificadores e imprimindo as arestas que representam artistas em comum:
+
 ```c
 void escrever_grafo(const char *filename, struct movie *ArrayFilmes, int count_movies) {
     FILE *file = fopen(filename, "w");
@@ -233,7 +255,9 @@ void escrever_grafo(const char *filename, struct movie *ArrayFilmes, int count_m
 ### (10) Utilização de Estruturas e Funções Adicionais
 
 #### Estrutura Node
+
 A estrutura `struct node` é usada para criar listas encadeadas dentro das structs `actor` e `movie`:
+
 ```c
 struct node {
     int id;
@@ -244,28 +268,34 @@ struct node {
 #### Funções Adicionais
 
 - **escape_quotes:** Escapa aspas duplas em strings para garantir um formato DOT válido.
-    ```c
-    char *escape_quotes(const char *str);
+
+  ```c
+  char *escape_quotes(const char *str);
 
 
-    ```
+  ```
+
 - **adicionar_vizinho:** Adiciona um filme à lista de vizinhos de outro filme.
-    ```c
-    void adicionar_vizinho(struct movie *filme, int id_vizinho);
-    ```
+  ```c
+  void adicionar_vizinho(struct movie *filme, int id_vizinho);
+  ```
 
 ## Visualização
+
 Para visualizar o grafo gerado, use o Graphviz para converter o arquivo DOT em uma imagem:
+
 ```sh
 dot -Tsvg input.dot -o output.svg
 ```
 
 ## Estruturas de Dados Utilizadas
+
 - **Array Dinâmico:** Utilizado para armazenar os artistas e filmes.
 - **Lista Encadeada:** Utilizada para armazenar os IDs dos filmes em que cada artista participou e para armazenar os vizinhos de cada filme no grafo.
 - **Busca Binária:** Utilizada para otimizar a busca de filmes por ID durante a construção do grafo.
 
 ## Funções Importantes
+
 - `adicionar_filme`: Adiciona um filme à lista de filmes de um ator.
 - `adicionar_vizinho`: Adiciona um vizinho à lista de vizinhos de um filme.
 - `liberar_lista`: Libera a memória alocada para uma lista encadeada de nós.
