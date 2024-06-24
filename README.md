@@ -1,4 +1,9 @@
-## README.md
+## 🙋‍♂️ Equipe de desenvolvimento
+<table align='center'>
+  <tr>
+    <td align="center">
+        <img style="border-radius: 50%;" src="https://avatars.githubusercontent.com/u/101208372?v=4" width="100px;" alt=""/><br /><sub><b><a href="https://github.com/Y4nnLS">Yann Lucas</a></b></sub></a><br />🤓☝</a></td>
+  </table>
 
 # Projeto de Grafos de Filmes e Artistas
 
@@ -225,32 +230,40 @@ void escrever_grafo(const char *filename, struct movie *ArrayFilmes, int count_m
 }
 ```
 
-## Compilação e Execução
+### (10) Utilização de Estruturas e Funções Adicionais
 
-### Compilação
-Para compilar o programa, use o seguinte comando:
-```sh
-gcc main.c -o graph_generator
+#### Estrutura Node
+A estrutura `struct node` é usada para criar listas encadeadas dentro das structs `actor` e `movie`:
+```c
+struct node {
+    int id;
+    struct node *next;
+};
 ```
 
-### Execução
-Para executar o programa, use o seguinte comando:
-```sh
-./graph_generator
-```
+#### Funções Adicionais
 
-### Visualização
+- **escape_quotes:** Escapa aspas duplas em strings para garantir um formato DOT válido.
+    ```c
+    char *escape_quotes(const char *str);
+
+
+    ```
+- **adicionar_vizinho:** Adiciona um filme à lista de vizinhos de outro filme.
+    ```c
+    void adicionar_vizinho(struct movie *filme, int id_vizinho);
+    ```
+
+## Visualização
 Para visualizar o grafo gerado, use o Graphviz para converter o arquivo DOT em uma imagem:
 ```sh
-dot -Tsvg output.dot -o graph.svg
+dot -Tsvg input.dot -o output.svg
 ```
 
 ## Estruturas de Dados Utilizadas
-- **Array Dinâmico**: Utilizado para armazenar os artistas e filmes
-
-.
-- **Lista Encadeada**: Utilizada para armazenar os IDs dos filmes em que cada artista participou e para armazenar os vizinhos de cada filme no grafo.
-- **Busca Binária**: Utilizada para otimizar a busca de filmes por ID durante a construção do grafo.
+- **Array Dinâmico:** Utilizado para armazenar os artistas e filmes.
+- **Lista Encadeada:** Utilizada para armazenar os IDs dos filmes em que cada artista participou e para armazenar os vizinhos de cada filme no grafo.
+- **Busca Binária:** Utilizada para otimizar a busca de filmes por ID durante a construção do grafo.
 
 ## Funções Importantes
 - `adicionar_filme`: Adiciona um filme à lista de filmes de um ator.

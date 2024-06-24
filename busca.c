@@ -403,9 +403,57 @@ void escrever_grafo(const char *filename, struct movie *ArrayFilmes, int count_m
     fclose(output_file);
 }
 
+/**
+ * Busca binária por um filme em um array de filmes ordenado por ID.
+ *
+ * @param ArrayFilmes Apontador para o array de filmes.
+ * @param l Índice esquerdo para iniciar a busca.
+ * @param r Índice direito para terminar a busca.
+ * @param id_filme ID do filme a ser buscado.
+ * @param indices Array para armazenar os índices visitados durante a busca.
+ * @param depth Profundidade da busca binária.
+ * @return Índice do filme se encontrado; -1 se não encontrado.
+ */
+int buscar_filme(struct movie *ArrayFilmes, int l, int r, int id_filme, int *indices, int depth)
+{
+    if (r >= l)
+    {
+        int mid = l + (r - l) / 2;
+
+        // Armazenar o índice visitado
+        indices[depth] = mid;
+
+        // Verificar se o filme foi encontrado
+        if (ArrayFilmes[mid].id == id_filme)
+        {
+            printf("Filme encontrado com sucesso!\n");
+            printf("Índice do filme encontrado: %d\n", mid);
+            printf("Caminho percorrido na busca binária:\n");
+            for (int i = 0; i <= depth; i++)
+            {
+                printf("%d ", indices[i]);
+            }
+            printf("\n");
+            return mid; // Retorna o índice do filme encontrado
+        }
+
+        // Se o ID do filme for maior, buscar na metade esquerda
+        if (ArrayFilmes[mid].id > id_filme)
+        {
+            return buscar_filme(ArrayFilmes, l, mid - 1, id_filme, indices, depth + 1);
+        }
+
+        // Senão, buscar na metade direita
+        return buscar_filme(ArrayFilmes, mid + 1, r, id_filme, indices, depth + 1);
+    }
+
+    // Se não encontrou o filme
+    return -1;
+}
+
 int main()
 {
-
+    // Exemplo de inicialização dos arrays de atores e filmes
     int max_actors = 10000; // Limite máximo de atores a serem processados
     int max_movies = 10000; // Limite máximo de filmes a serem processados
 
@@ -417,10 +465,10 @@ int main()
         exit(EXIT_FAILURE);
     }
 
+    // Suponha que ler_atores preenche ArrayArtistas com dados
     int count_actors = ler_atores("name.basics.tsv", &ArrayArtistas, &size_ArrayArtistas);
     if (count_actors > max_actors)
         count_actors = max_actors; // Limita o número de atores ao máximo definido
-
 
     int size_ArrayFilmes = 1;
     struct movie *ArrayFilmes = (struct movie *)malloc(size_ArrayFilmes * sizeof(struct movie));
@@ -430,18 +478,35 @@ int main()
         exit(EXIT_FAILURE);
     }
 
+    // Suponha que ler_filmes preenche ArrayFilmes com dados
     int count_movies = ler_filmes("title.basics.tsv", &ArrayFilmes, &size_ArrayFilmes);
     if (count_movies > max_movies)
         count_movies = max_movies; // Limita o número de filmes ao máximo definido
 
-    preencher_neighbors(ArrayArtistas, count_actors, ArrayFilmes, count_movies);
+    // Exemplo de busca por um filme específico
+    int id_filme_procurado = 9; // ID do filme que você está buscando
+    int *indices = (int *)malloc(count_movies * sizeof(int)); // Array para armazenar os índices visitados
+    if (!indices)
+    {
+        perror("Erro ao alocar memória");
+        exit(EXIT_FAILURE);
+    }
+    int indice_encontrado = buscar_filme(ArrayFilmes, 0, count_movies - 1, id_filme_procurado, indices, 0);
+    free(indices); // Liberar memória do array de índices
 
-    escrever_grafo("input.dot", ArrayFilmes, count_movies);
+    if (indice_encontrado != -1)
+    {
+        // Filme encontrado, você pode fazer operações com ele aqui
+        printf("Filme encontrado: %s\n", ArrayFilmes[indice_encontrado].title);
+    }
+    else
+    {
+        printf("Filme com ID %d não encontrado.\n", id_filme_procurado);
+    }
 
+    // Liberar memória alocada
     liberar_memoria_atores(ArrayArtistas, count_actors);
     liberar_memoria_filmes(ArrayFilmes, count_movies);
-
-    printf("Fim\n");
 
     return 0;
 }
